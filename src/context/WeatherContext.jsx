@@ -1,4 +1,6 @@
 
+import { reverseGeocode }
+from "../services/api/geocodingApi";
 import {
   createContext,
   useContext,
@@ -40,6 +42,15 @@ export function WeatherProvider({
     setError(null);
   };
 
+  const capitalize = (
+    text = ""
+  ) => {
+    return text.replace(
+      /\b\w/g,
+      (char) => char.toUpperCase()
+    );
+  };
+
   const buildWeatherObject = (
     current
   ) => {
@@ -64,11 +75,15 @@ export function WeatherProvider({
       pressure:
         current.main?.pressure,
 
-      visibility:
-        current.visibility,
+     visibility:
+Number(
+(current.visibility/1000).toFixed(1)
+),
 
       windSpeed:
-        current.wind?.speed,
+Number(
+(current.wind?.speed*3.6).toFixed(1)
+),
 
       tempMin:
         Math.round(
@@ -85,8 +100,10 @@ export function WeatherProvider({
           ?.main,
 
       description:
-        current.weather?.[0]
-          ?.description,
+        capitalize(
+          current.weather?.[0]
+            ?.description || ""
+        ),
 
       icon:
         current.weather?.[0]
@@ -107,39 +124,71 @@ export function WeatherProvider({
   };
 
   const buildForecastObject = (
-    forecastData
-  ) => {
-    const hourly =
-      forecastData.list
-        ?.slice(0, 8)
-        ?.map((item) => ({
-          time: item.dt,
-          temp:
-            Math.round(
-              item.main.temp
-            ),
-          icon:
-            item.weather?.[0]
-              ?.icon,
-        })) || [];
+  forecastData,
+  currentWeather
+) => { const nowTimestamp = Math.floor(Date.now() / 1000);
 
+const nextForecast = forecastData.list
+  ?.filter((item) => item.dt > nowTimestamp)
+  .slice(0, 7)
+  .map((item) => ({
+    time: new Date(item.dt * 1000).toLocaleTimeString([], {
+      hour: "numeric",
+      minute: "2-digit",
+    }),
+
+    timestamp: item.dt,
+
+    temperature: Math.round(item.main?.temp || 0),
+
+    icon: item.weather?.[0]?.icon || "01d",
+
+    condition: item.weather?.[0]?.main || "Clear",
+
+    pop: Math.round((item.pop || null) * 100),
+
+    humidity: item.main?.humidity ?? 0,
+  })) || [];
+
+const hourly = [
+  {
+    time: "Now",
+
+    timestamp: nowTimestamp,
+
+    temperature: Math.round(currentWeather.main?.temp),
+
+    icon: currentWeather.weather?.[0]?.icon,
+
+    condition: currentWeather.weather?.[0]?.main,
+
+    pop: 0,
+
+    // ✅ নতুন যোগ করো
+    humidity: currentWeather.main?.humidity ?? 0,
+  },
+
+  ...nextForecast,
+];
+  
     const dailyMap = {};
 
-    forecastData.list?.forEach(
-      (item) => {
-        const date =
-          new Date(
-            item.dt * 1000
-          ).toDateString();
+forecastData.list?.forEach((item) => {
+  const date = new Date(item.dt * 1000).toDateString();
+  const hour = new Date(item.dt * 1000).getHours();
 
-        if (
-          !dailyMap[date]
-        ) {
-          dailyMap[date] =
-            item;
-        }
-      }
-    );
+  if (
+    !dailyMap[date] ||
+    Math.abs(hour - 12) <
+      Math.abs(
+        new Date(
+          dailyMap[date].dt * 1000
+        ).getHours() - 12
+      )
+  ) {
+    dailyMap[date] = item;
+  }
+});
 
     const daily =
       Object.values(
@@ -147,14 +196,36 @@ export function WeatherProvider({
       )
         .slice(0, 5)
         .map((item) => ({
-          date: item.dt,
-          temp:
-            Math.round(
-              item.main.temp
+          day:
+            new Date(
+              item.dt * 1000
+            ).toLocaleDateString(
+              "en-US",
+              {
+                weekday: "short",
+              }
             ),
+
+          date: item.dt,
+temperature:
+  Math.round(
+    item.main?.temp || 0
+  ),
+
+tempMin:
+  Math.round(
+    item.main?.temp_min || 0
+  ),
+
+tempMax:
+  Math.round(
+    item.main?.temp_max || 0
+  ),
+         
           icon:
             item.weather?.[0]
               ?.icon,
+
           condition:
             item.weather?.[0]
               ?.main,
@@ -198,30 +269,69 @@ export function WeatherProvider({
           position.coords
             .longitude;
 
+        console.log(
+          "LAT:",
+          lat
+        );
+
+        console.log(
+          "LON:",
+          lon
+        );
+
         const data =
-          await getWeatherBundle(
-            lat,
-            lon
-          );
+  await getWeatherBundle(
+    lat,
+    lon
+  );
 
-        setWeather(
-          buildWeatherObject(
-            data.current
-          )
-        );
+const locationInfo =
+  await reverseGeocode(
+    lat,
+    lon
+  );
 
-        setForecast(
-          buildForecastObject(
-            data.forecast
-          )
-        );
+const weatherData =
+  buildWeatherObject(
+    data.current
+  );
 
-        setAqi(
-          data.airQuality
-            ?.list?.[0]
-            ?.main?.aqi || 1
-        );
+weatherData.city =
+  locationInfo?.city ||
+  locationInfo?.town ||
+  locationInfo?.municipality ||
+  locationInfo?.village ||
+  locationInfo?.county ||
+  locationInfo?.name ||
+  data.current?.name ||
+  "Unknown";
+
+
+weatherData.country =
+  locationInfo?.country ||
+  data.current?.sys?.country;
+
+setWeather(weatherData);
+
+
+setForecast(
+  buildForecastObject(
+    data.forecast,
+    data.current
+  )
+);
+
+       const aqiValue =
+  data.airQuality
+    ?.list?.[0]
+    ?.main?.aqi;
+
+setAqi(
+  aqiValue ?? null
+);
       } catch (err) {
+        console.error(err);
+
         setError(
           err?.message ||
             "Failed to load weather"
@@ -256,23 +366,30 @@ export function WeatherProvider({
               city.lon
             );
 
-          setWeather(
-            buildWeatherObject(
-              current
-            )
-          );
+          const weatherData =
+  buildWeatherObject(
+    current
+  );
+
+
+setWeather(
+  weatherData
+);
 
           setForecast(
-            buildForecastObject(
-              forecastData
-            )
-          );
+  buildForecastObject(
+    forecastData,
+    current
+  )
+);
 
           setAqi(
             air?.list?.[0]
               ?.main?.aqi || 1
           );
         } catch (err) {
+          console.error(err);
+
           setError(
             err?.message ||
               "Failed to load city weather"
@@ -286,19 +403,11 @@ export function WeatherProvider({
 
   const value = {
     weather,
-    setWeather,
-
     forecast,
-    setForecast,
-
     aqi,
-    setAqi,
-
     loading,
     error,
-
     clearError,
-
     loadCurrentLocationWeather,
     loadCityWeather,
   };
@@ -328,4 +437,3 @@ export function useWeather() {
 }
 
 export default WeatherContext;
-

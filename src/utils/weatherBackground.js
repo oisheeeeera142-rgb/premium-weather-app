@@ -1,53 +1,28 @@
-export const getWeatherBackground =
-  (
-    condition,
-    isNight = false
-  ) => {
-    if (isNight) {
-      return {
-        gradient:
-          "bg-nightGradient"
-      };
-    }
+export const getWeatherBackground = (
+  condition,
+  isNight
+) => {
+  if (isNight) {
+    return "/backgrounds/night.jpg";
+  }
 
-    switch (
-      condition
-    ) {
-      case "Clear":
-        return {
-          gradient:
-            "bg-weatherGradient"
-        };
+  switch (
+    condition?.toLowerCase()
+  ) {
+    case "clear":
+      return "/backgrounds/sunny.jpg";
 
-      case "Clouds":
-        return {
-          gradient:
-            "bg-slate-700"
-        };
+    case "rain":
+    case "drizzle":
+      return "/backgrounds/rain.jpg";
 
-      case "Rain":
-      case "Drizzle":
-        return {
-          gradient:
-            "bg-rainGradient"
-        };
+    case "clouds":
+      return "/backgrounds/clouds.jpg";
 
-      case "Thunderstorm":
-        return {
-          gradient:
-            "bg-gray-900"
-        };
+    case "thunderstorm":
+      return "/backgrounds/storm.jpg";
 
-      case "Snow":
-        return {
-          gradient:
-            "bg-sky-200"
-        };
-
-      default:
-        return {
-          gradient:
-            "bg-weatherGradient"
-        };
-    }
-  };
+    default:
+      return "/backgrounds/default.jpg";
+  }
+};

@@ -3,6 +3,7 @@
 const API_KEY =
   import.meta.env
     .VITE_OPENWEATHER_API_KEY;
+    
 
 const GEO_BASE_URL =
   import.meta.env

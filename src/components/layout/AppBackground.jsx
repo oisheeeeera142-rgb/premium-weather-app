@@ -1,9 +1,10 @@
+
 import { motion, AnimatePresence } from "framer-motion";
 
-import SunnyAnimation from "../../animations/SunnyAnimation";
-import CloudyAnimation from "../../animations/CloudyAnimation";
-import RainAnimation from "../../animations/RainAnimation";
-import NightAnimation from "../../animations/NightAnimation";
+import SunnyAnimation from "../animations/SunnyAnimation";
+import CloudyAnimation from "../animations/CloudyAnimation";
+import RainAnimation from "../animations/RainAnimation";
+import NightAnimation from "../animations/NightAnimation";
 
 function AppBackground({
   children,
@@ -11,10 +12,35 @@ function AppBackground({
   hideAnimation = false
 }) {
 
-  const getBackgroundClasses = () => {
+  const weather =
+    condition?.toLowerCase() || "";
 
-    const weather =
-      condition?.toLowerCase() || "";
+  const getBackgroundImage = () => {
+
+    if (
+      weather.includes("rain") ||
+      weather.includes("drizzle") ||
+      weather.includes("thunderstorm")
+    ) {
+      return "https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?auto=format&fit=crop&w=2000&q=80";
+    }
+
+    if (
+      weather.includes("cloud")
+    ) {
+      return "https://images.unsplash.com/photo-1534088568595-a066f410bcda?auto=format&fit=crop&w=2000&q=80";
+    }
+
+    if (
+      weather.includes("night")
+    ) {
+      return "https://images.unsplash.com/photo-1502134249126-9f3755a50d78?auto=format&fit=crop&w=2000&q=80";
+    }
+
+    return "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=2000&q=80";
+  };
+
+  const getOverlayClasses = () => {
 
     if (
       weather.includes("rain") ||
@@ -22,10 +48,7 @@ function AppBackground({
       weather.includes("thunderstorm")
     ) {
       return `
-        bg-gradient-to-br
-        from-slate-900
-        via-slate-800
-        to-blue-950
+        bg-slate-950/65
       `;
     }
 
@@ -33,10 +56,7 @@ function AppBackground({
       weather.includes("cloud")
     ) {
       return `
-        bg-gradient-to-br
-        from-slate-800
-        via-slate-700
-        to-slate-900
+        bg-slate-900/55
       `;
     }
 
@@ -44,18 +64,12 @@ function AppBackground({
       weather.includes("night")
     ) {
       return `
-        bg-gradient-to-br
-        from-indigo-950
-        via-slate-950
-        to-black
+        bg-black/60
       `;
     }
 
     return `
-      bg-gradient-to-br
-      from-sky-400
-      via-cyan-500
-      to-blue-700
+      bg-sky-900/25
     `;
   };
 
@@ -64,9 +78,6 @@ function AppBackground({
     if (hideAnimation) {
       return null;
     }
-
-    const weather =
-      condition?.toLowerCase() || "";
 
     if (
       weather.includes("rain") ||
@@ -94,14 +105,42 @@ function AppBackground({
   return (
 
     <div
-      className={`
-        min-h-screen
-        w-full
-        overflow-hidden
+      className="
         relative
-        ${getBackgroundClasses()}
-      `}
+        min-h-screen
+        overflow-hidden
+      "
     >
+
+      <motion.div
+        initial={{
+          opacity: 0
+        }}
+        animate={{
+          opacity: 1
+        }}
+        transition={{
+          duration: 1
+        }}
+        className="
+          absolute
+          inset-0
+        "
+        style={{
+          backgroundImage: `url(${getBackgroundImage()})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat"
+        }}
+      />
+
+      <div
+        className={`
+          absolute
+          inset-0
+          ${getOverlayClasses()}
+        `}
+      />
 
       <AnimatePresence>
         {renderAnimation()}
@@ -120,7 +159,7 @@ function AppBackground({
         className="
           absolute
           inset-0
-          backdrop-blur-[2px]
+          backdrop-blur-[6px]
         "
       />
 
@@ -141,3 +180,4 @@ function AppBackground({
 }
 
 export default AppBackground;
+

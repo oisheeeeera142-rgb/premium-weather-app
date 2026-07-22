@@ -1,6 +1,8 @@
 
 const API_KEY =
   import.meta.env.VITE_OPENWEATHER_API_KEY;
+ 
+  
 
 const WEATHER_BASE_URL =
   import.meta.env.VITE_WEATHER_BASE_URL ||
