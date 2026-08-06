@@ -1,148 +1,134 @@
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { MdArrowBack, MdMyLocation } from "react-icons/md";
 
 import { useWeather } from "../context/WeatherContext";
-
-import * as cityStorage from "../services/storage/cityStorage";
-
 import PageContainer from "../components/common/PageContainer";
 import SectionTitle from "../components/common/SectionTitle";
-import AppBackground from "../components/layout/AppBackground";
+import GlassCard from "../components/common/GlassCard";
 
-import CitySearch from "../components/city/CitySearch";
-import CityCard from "../components/city/CityCard";
-import CurrentLocationCard from "../components/city/CurrentLocationCard";
-import PopularCities from "../components/city/PopularCities";
+import SearchBar from "../components/city/SearchBar";
+import LocationCard from "../components/city/LocationCard";
+import popularLocations from "../data/popularLocations";
 
-import EmptyState from "../components/common/EmptyState";
+import {
+  getRecentCities,
+  addRecentCity,
+  getFavoriteCities,
+  isFavoriteCity,
+  toggleFavoriteCity,
+} from "../services/storage/citiesStorage";
 
 function ManageCitiesPage() {
   const navigate = useNavigate();
+  const { loadCityWeather, loadCurrentLocationWeather } = useWeather();
 
-  const { loadCityWeather } = useWeather();
+  const [recent, setRecent] = useState([]);
+  const [favorites, setFavorites] = useState([]);
 
-  const [cities, setCities] = useState(
-    cityStorage.getSavedCities()
-  );
+  useEffect(() => {
+    setRecent(getRecentCities());
+    setFavorites(getFavoriteCities());
+  }, []);
 
-  const [searchResults, setSearchResults] =
-    useState([]);
-
-  const handleSearch = (text) => {
-    if (!text) {
-      setSearchResults([]);
-      return;
-    }
-
-    const filtered = cities.filter((city) =>
-      city.name
-        .toLowerCase()
-        .includes(text.toLowerCase())
-    );
-
-    setSearchResults(filtered);
-  };
-
-  const handleSelect = async (city) => {
-    const normalized = {
-      name: city.name,
-      country: city.country || "",
-      lat: Number(city.lat),
-      lon: Number(city.lon),
+  const handleSelectLocation = async (location) => {
+    const city = {
+      name: location.name,
+      country: location.country,
+      lat: location.lat,
+      lon: location.lon,
     };
 
-    cityStorage.addCity(normalized);
-
-    setCities(
-      cityStorage.getSavedCities()
-    );
-
-    cityStorage.setSelectedCity(
-      normalized
-    );
-
-    await loadCityWeather(
-      normalized
-    );
-
-    navigate("/home");
+    await loadCityWeather(city);
+    setRecent(addRecentCity(city));
+    navigate("/");
   };
 
-  const handleRemove = (cityName) => {
-    cityStorage.removeCity(cityName);
+  const handleUseCurrentLocation = async () => {
+    await loadCurrentLocationWeather();
+    navigate("/");
+  };
 
-    setCities(
-      cityStorage.getSavedCities()
-    );
+  const handleToggleFavorite = (location) => {
+    setFavorites(toggleFavoriteCity(location));
   };
 
   return (
-    <AppBackground>
-      <PageContainer>
-        <SectionTitle
-          title="Manage Cities"
-        />
+    <PageContainer>
+      <div className="flex items-center gap-3 mb-6">
+        <button
+          onClick={() => navigate("/")}
+          className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center"
+        >
+          <MdArrowBack size={20} className="text-white" />
+        </button>
 
-        <CitySearch
-          results={searchResults}
-          onSearch={handleSearch}
-          onSelect={handleSelect}
-        />
+        <h1 className="text-xl font-bold text-white">Manage Cities</h1>
+      </div>
 
-        <div className="mt-6">
-          <CurrentLocationCard
-            location={{
-              city:
-                "Current Location",
-            }}
-            onOpen={() =>
-              navigate("/home")
-            }
-          />
-        </div>
+      <SearchBar onSelect={handleSelectLocation} />
 
-        <div className="mt-8">
-          <SectionTitle
-            title="Added Cities"
-          />
+      <motion.div whileTap={{ scale: 0.98 }} className="mt-4">
+        <GlassCard
+          className="p-4 flex items-center gap-3 cursor-pointer"
+          onClick={handleUseCurrentLocation}
+        >
+          <MdMyLocation size={22} className="text-white" />
+          <span className="text-white font-medium">Current Location</span>
+        </GlassCard>
+      </motion.div>
 
-          {cities.length === 0 ? (
-            <EmptyState
-              title="No Cities Added"
-              description="Add cities to quickly switch between weather locations."
+      {favorites.length > 0 && (
+        <section className="mt-8">
+          <SectionTitle title="Favorites" />
+          <div className="mt-4 grid gap-3">
+            {favorites.map((city) => (
+              <LocationCard
+                key={`${city.lat}-${city.lon}`}
+                location={city}
+                onSelect={handleSelectLocation}
+                isFavorite
+                onToggleFavorite={handleToggleFavorite}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {recent.length > 0 && (
+        <section className="mt-8">
+          <SectionTitle title="Recently Viewed" />
+          <div className="mt-4 grid gap-3">
+            {recent.map((city) => (
+              <LocationCard
+                key={`${city.lat}-${city.lon}`}
+                location={city}
+                onSelect={handleSelectLocation}
+                isFavorite={isFavoriteCity(city)}
+                onToggleFavorite={handleToggleFavorite}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+      <section className="mt-8 mb-10">
+        <SectionTitle title="Popular Locations" />
+        <div className="mt-4 grid gap-3">
+          {popularLocations.map((city) => (
+            <LocationCard
+              key={`${city.lat}-${city.lon}`}
+              location={city}
+              onSelect={handleSelectLocation}
+              isFavorite={isFavoriteCity(city)}
+              onToggleFavorite={handleToggleFavorite}
             />
-          ) : (
-            <div className="space-y-3">
-              {cities.map((city) => (
-                <CityCard
-                  key={`${city.name}-${city.lat}`}
-                  city={city}
-                  onSelect={
-                    handleSelect
-                  }
-                  onRemove={
-                    handleRemove
-                  }
-                />
-              ))}
-            </div>
-          )}
+          ))}
         </div>
-
-        <div className="mt-8">
-          <SectionTitle
-            title="Popular Cities"
-          />
-
-          <PopularCities
-            onSelect={handleSelect}
-          />
-        </div>
-      </PageContainer>
-    </AppBackground>
+      </section>
+    </PageContainer>
   );
 }
 
 export default ManageCitiesPage;
-

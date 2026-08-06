@@ -7,7 +7,7 @@ from "../../utils/iconMapper";
 function ConditionBadge({
   condition,
   description,
-  night=false
+  night = false
 }) {
 
 
@@ -24,22 +24,56 @@ function ConditionBadge({
       className="
         flex
         items-center
-        gap-3
+        gap-4
         text-white
       "
     >
 
-      <Icon
-        size={48}
-      />
+      <div className="relative shrink-0">
+
+        {/* Ambient glow behind the icon, matches the rest of the card set */}
+        <div
+          className="
+            absolute
+            inset-0
+            rounded-2xl
+            bg-sky-400/20
+            blur-xl
+          "
+        />
+
+        <div
+          className="
+            relative
+            flex
+            items-center
+            justify-center
+            w-16
+            h-16
+            rounded-2xl
+            bg-white/10
+            border
+            border-white/15
+            backdrop-blur-md
+          "
+        >
+          <Icon
+            size={36}
+            className="drop-shadow-sm"
+          />
+        </div>
+
+      </div>
 
 
       <div>
 
         <p
           className="
-            text-xl
-            font-semibold
+            text-lg
+            sm:text-xl
+            font-bold
+            tracking-tight
           "
         >
 
@@ -50,8 +84,10 @@ function ConditionBadge({
 
         <p
           className="
-            text-white/70
+            text-white/60
+            text-sm
             capitalize
+            mt-0.5
           "
         >
 

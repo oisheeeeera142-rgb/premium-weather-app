@@ -1,4 +1,28 @@
+export const searchLocations = async (query, limit = 6) => {
+  if (!query || query.trim().length < 2) return [];
 
+  const url = new URL("https://api.openweathermap.org/geo/1.0/direct");
+  url.searchParams.append("q", query.trim());
+  url.searchParams.append("limit", limit);
+  url.searchParams.append("appid", API_KEY); // reuse the same API_KEY constant already in this file
+
+  const response = await fetch(url.toString());
+
+  if (!response.ok) {
+    throw new Error("Failed to search locations");
+  }
+
+  const data = await response.json();
+
+  return data.map((item) => ({
+    id: `${item.lat}-${item.lon}`,
+    name: item.name,
+    state: item.state,
+    country: item.country,
+    lat: item.lat,
+    lon: item.lon,
+  }));
+};
 
 const API_KEY =
   import.meta.env

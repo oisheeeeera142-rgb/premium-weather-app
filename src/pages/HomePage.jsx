@@ -12,7 +12,6 @@ import Header from "../components/layout/Header";
 
 import HeroWeatherCard from "../components/weather/HeroWeatherCard";
 import ForecastHourly from "../components/weather/ForecastHourly";
-import ForecastChart from "../components/weather/ForecastChart";
 import ForecastDaily from "../components/weather/ForecastDaily";
 import WeatherDetailsGrid from "../components/weather/WeatherDetailsGrid";
 import SunriseSunsetCard from "../components/weather/SunriseSunsetCard";
@@ -83,35 +82,20 @@ function HomePage() {
           </section>
         )}
 
-        {/* 24 Hour Forecast */}
+        {/* 24 Hour Forecast — single merged card (graph + hourly strip) */}
         {forecast?.hourly?.length > 0 && (
-          <section className="mt-8">
-            <SectionTitle title="24 Hour Forecast" />
-
-            <div className="mt-4">
-              <ForecastHourly
-                data={forecast.hourly}
-              />
-            </div>
-          </section>
-        )}
-
-        {/* Temperature Graph */}
-        {forecast?.hourly?.length > 0 && (
-          <section className="mt-8">
-            <SectionTitle title="Temperature Trend" />
-
-            <div className="mt-4">
-              <ForecastChart
-                data={forecast.hourly}
-              />
-            </div>
+          <section className="mt-6">
+            <ForecastHourly
+              data={forecast.hourly}
+              sunrise={weather?.sunrise}
+              sunset={weather?.sunset}
+            />
           </section>
         )}
 
         {/* 5 Day Forecast */}
         {forecast?.daily?.length > 0 && (
-          <section className="mt-8">
+          <section className="mt-6">
             <SectionTitle title="5 Day Forecast" />
 
             <div className="mt-4">
@@ -124,7 +108,7 @@ function HomePage() {
 
         {/* Weather Details */}
         {weather && (
-          <section className="mt-8">
+          <section className="mt-6">
             <SectionTitle title="Weather Details" />
 
             <div className="mt-4">
@@ -137,26 +121,18 @@ function HomePage() {
 
         {/* Sunrise & Sunset */}
         {weather && (
-          <section className="mt-8">
-            <SectionTitle title="Sunrise & Sunset" />
-
-            <div className="mt-4">
-              <SunriseSunsetCard
-                sunrise={weather.sunrise}
-                sunset={weather.sunset}
-              />
-            </div>
+          <section className="mt-6">
+            <SunriseSunsetCard
+              sunrise={weather.sunrise}
+              sunset={weather.sunset}
+            />
           </section>
         )}
 
         {/* Air Quality */}
         {aqi && (
-          <section className="mt-8 mb-10">
-            <SectionTitle title="Air Quality" />
-
-            <div className="mt-4">
-              <AQICard aqi={aqi} />
-            </div>
+          <section className="mt-6 mb-10">
+            <AQICard aqi={aqi} />
           </section>
         )}
 

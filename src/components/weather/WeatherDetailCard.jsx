@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import GlassCard from "../common/GlassCard";
 
 function WeatherDetailCard({
@@ -5,101 +6,95 @@ function WeatherDetailCard({
   title,
   value,
   unit,
+  subtitle,
+  delay = 0,
 }) {
   return (
-    <GlassCard
-      className="
-        group
-        relative
-        overflow-hidden
-        rounded-3xl
-        p-5
-        transition-all
-        duration-300
-        hover:scale-[1.03]
-        hover:-translate-y-1
-      "
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, delay }}
     >
-      {/* Background Glow */}
-      <div
+      <GlassCard
         className="
-          absolute
-          -top-10
-          -right-10
-          w-24
-          h-24
-          rounded-full
-          bg-white/10
-          blur-2xl
+          group
+          relative
+          overflow-hidden
+          rounded-3xl
+          p-5
+          h-full
+          transition-all
+          duration-300
+          hover:scale-[1.03]
+          hover:-translate-y-1
         "
-      />
-
-      <div className="relative z-10">
-
-        {/* Icon */}
+      >
+        {/* Background Glow */}
         <div
           className="
-            w-14
-            h-14
-            rounded-2xl
+            absolute
+            -top-10
+            -right-10
+            w-24
+            h-24
+            rounded-full
             bg-white/10
-            flex
-            items-center
-            justify-center
-            text-3xl
-            text-white
-            mb-5
-            transition-all
-            duration-300
-            group-hover:scale-110
-            group-hover:bg-white/20
+            blur-2xl
           "
-        >
-          {icon}
-        </div>
+        />
 
-        {/* Title */}
-        <p
-          className="
-            text-sm
-            text-white/60
-            font-medium
-          "
-        >
-          {title}
-        </p>
+        <div className="relative z-10">
 
-        {/* Value */}
-        <div className="mt-2 flex items-end">
-
-          <span
+          {/* Icon */}
+          <div
             className="
+              w-14
+              h-14
+              rounded-2xl
+              bg-white/10
+              flex
+              items-center
+              justify-center
               text-3xl
-              font-bold
               text-white
-              leading-none
+              mb-5
+              transition-all
+              duration-300
+              group-hover:scale-110
+              group-hover:bg-white/20
             "
           >
-            {value ?? "--"}
-          </span>
+            {icon}
+          </div>
 
-          {unit && (
-            <span
-              className="
-                ml-1
-                mb-1
-                text-base
-                text-white/70
-              "
-            >
-              {unit}
+          {/* Title */}
+          <p className="text-sm text-white/60 font-medium">
+            {title}
+          </p>
+
+          {/* Value */}
+          <div className="mt-2 flex items-end">
+            <span className="text-3xl font-bold text-white leading-none">
+              {value ?? "--"}
             </span>
+
+            {unit && (
+              <span className="ml-1 mb-1 text-base text-white/70">
+                {unit}
+              </span>
+            )}
+          </div>
+
+          {/* Subtitle */}
+          {subtitle && (
+            <p className="mt-2 text-xs text-white/50">
+              {subtitle}
+            </p>
           )}
 
         </div>
-
-      </div>
-    </GlassCard>
+      </GlassCard>
+    </motion.div>
   );
 }
 
