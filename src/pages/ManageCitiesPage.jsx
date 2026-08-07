@@ -42,12 +42,12 @@ function ManageCitiesPage() {
 
     await loadCityWeather(city);
     setRecent(addRecentCity(city));
-    navigate("/");
+    navigate("/home");
   };
 
   const handleUseCurrentLocation = async () => {
     await loadCurrentLocationWeather();
-    navigate("/");
+    navigate("/home");
   };
 
   const handleToggleFavorite = (location) => {
@@ -58,12 +58,11 @@ function ManageCitiesPage() {
     <PageContainer>
       <div className="flex items-center gap-3 mb-6">
         <button
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/home")}
           className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center"
         >
           <MdArrowBack size={20} className="text-white" />
         </button>
-
         <h1 className="text-xl font-bold text-white">Manage Cities</h1>
       </div>
 

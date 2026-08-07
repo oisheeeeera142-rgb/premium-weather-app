@@ -32,9 +32,10 @@ function HomePage() {
   const settings = useMemo(() => getSettings(), []);
 
   useEffect(() => {
+  if (!weather) {
     loadCurrentLocationWeather();
-  }, [loadCurrentLocationWeather]);
-
+  }
+}, []);
   if (loading) {
     return (
       <AppBackground

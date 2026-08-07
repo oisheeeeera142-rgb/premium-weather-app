@@ -28,7 +28,7 @@ function LocationCard({ location, onSelect, isFavorite, onToggleFavorite }) {
   }, [location.lat, location.lon]);
 
   return (
-    <motion.div whileTap={{ scale: 0.97 }} whileHover={{ scale: 1.02 }}>
+    <motion.div whileHover={{ scale: 1.02 }}>
       <GlassCard
         className="p-4 flex items-center justify-between cursor-pointer"
         onClick={() => onSelect(location)}
