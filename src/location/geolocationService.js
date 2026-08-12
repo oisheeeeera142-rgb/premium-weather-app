@@ -1,4 +1,7 @@
-import { reverseGeocode } from "../api/geocodingApi";
+import {
+  reverseGeocode,
+  getMostSpecificLocality,
+} from "../api/geocodingApi";
 
 const GEO_OPTIONS = {
   enableHighAccuracy: true,
@@ -90,24 +93,46 @@ export const getCurrentLocationWithCity =
       await getCurrentPosition();
 
     try {
-      const cityData =
+      const address =
         await reverseGeocode(
           location.latitude,
           location.longitude
         );
 
+      console.log(
+        "GPS coordinates:",
+        location.latitude,
+        location.longitude
+      );
+
+      console.log(
+        "Reverse geocoded address:",
+        address
+      );
+
+      const displayLocation =
+        getMostSpecificLocality(
+          address
+        );
+
+      console.log(
+        "Selected display location:",
+        displayLocation
+      );
+
       return {
         ...location,
 
-        city:
-          cityData?.name ||
-          "Unknown City",
+        // Most specific populated locality (neighbourhood/suburb/etc),
+        // NOT cityData.name — that field can be an unrelated nearby
+        // place (e.g. "Sāmāir" instead of "Bashundhara R/A").
+        city: displayLocation,
 
         state:
-          cityData?.state || "",
+          address?.state || "",
 
         country:
-          cityData?.country || ""
+          address?.country || ""
       };
     } catch {
       return {

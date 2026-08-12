@@ -11,7 +11,6 @@ function LocationCard({ location, onSelect, isFavorite, onToggleFavorite }) {
 
   useEffect(() => {
     let active = true;
-
     getCurrentWeatherByCoords(location.lat, location.lon)
       .then((data) => {
         if (!active) return;
@@ -21,7 +20,6 @@ function LocationCard({ location, onSelect, isFavorite, onToggleFavorite }) {
       .catch(() => {
         if (active) setTemp(null);
       });
-
     return () => {
       active = false;
     };
@@ -41,7 +39,6 @@ function LocationCard({ location, onSelect, isFavorite, onToggleFavorite }) {
               className="w-10 h-10"
             />
           )}
-
           <div>
             <p className="font-semibold text-white">{location.name}</p>
             <p className="text-white/60 text-xs">{location.country}</p>
@@ -55,7 +52,9 @@ function LocationCard({ location, onSelect, isFavorite, onToggleFavorite }) {
 
           {onToggleFavorite && (
             <button
+              type="button"
               onClick={(e) => {
+                e.preventDefault();
                 e.stopPropagation();
                 onToggleFavorite(location);
               }}

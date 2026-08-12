@@ -72,6 +72,7 @@ function HomePage() {
 
         {/* Header */}
         <Header
+          area={weather?.area}
           city={weather?.city}
           country={weather?.country}
         />

@@ -33,15 +33,8 @@ function ManageCitiesPage() {
   }, []);
 
   const handleSelectLocation = async (location) => {
-    const city = {
-      name: location.name,
-      country: location.country,
-      lat: location.lat,
-      lon: location.lon,
-    };
-
-    await loadCityWeather(city);
-    setRecent(addRecentCity(city));
+    await loadCityWeather(location);
+    setRecent(addRecentCity(location));
     navigate("/home");
   };
 
@@ -51,7 +44,8 @@ function ManageCitiesPage() {
   };
 
   const handleToggleFavorite = (location) => {
-    setFavorites(toggleFavoriteCity(location));
+    const updated = toggleFavoriteCity(location);
+    setFavorites(updated);
   };
 
   return (
@@ -84,7 +78,7 @@ function ManageCitiesPage() {
           <div className="mt-4 grid gap-3">
             {favorites.map((city) => (
               <LocationCard
-                key={`${city.lat}-${city.lon}`}
+                key={city.id}
                 location={city}
                 onSelect={handleSelectLocation}
                 isFavorite
@@ -101,7 +95,7 @@ function ManageCitiesPage() {
           <div className="mt-4 grid gap-3">
             {recent.map((city) => (
               <LocationCard
-                key={`${city.lat}-${city.lon}`}
+                key={city.id}
                 location={city}
                 onSelect={handleSelectLocation}
                 isFavorite={isFavoriteCity(city)}

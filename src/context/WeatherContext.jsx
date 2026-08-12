@@ -1,4 +1,3 @@
-
 import { reverseGeocode }
 from "../services/api/geocodingApi";
 import {
@@ -221,7 +220,19 @@ tempMax:
   Math.round(
     item.main?.temp_max || 0
   ),
-         
+
+windSpeed:
+  item.wind?.speed != null
+    ? Number(
+        (item.wind.speed * 3.6).toFixed(1)
+      )
+    : null,
+
+pop:
+  item.pop != null
+    ? Math.round(item.pop * 100)
+    : 0,
+
           icon:
             item.weather?.[0]
               ?.icon,
