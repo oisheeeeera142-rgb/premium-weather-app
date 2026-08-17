@@ -1,9 +1,9 @@
+#🌦️  Premium Weather App
 
-🌦️  Premium Weather App
+
+
+
 🔗 Live Demo: https://premium-weather-app-mocha.vercel.app/
-
-
-
 
 A modern weather application built with **React** and **Vite** that provides real-time weather information and forecasts using the **OpenWeather API**. The app features a clean, responsive interface with smooth animations to deliver an excellent user experience.
 
