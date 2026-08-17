@@ -43,37 +43,61 @@ A modern, responsive, and interactive weather application built with **React.js*
 
 ---
 
-##  Application Preview
+###  Application Preview
 
-The application provides a premium weather dashboard with real-time weather information, forecasts, responsive layouts, and animated UI components.
+The **Premium Weather App** provides a modern weather dashboard with real-time weather information, weather forecasts, responsive layouts, and smooth animated UI components.
 
 ---
-Installation
 
-Clone the repository:
+##  Installation
 
+### 1. Clone the Repository
+
+```bash
 git clone https://github.com/oisheeeeera142-rgb/premium-weather-app.git
+```
 
-Navigate to the project folder:
+### 2. Navigate to the Project Directory
 
+```bash
 cd premium-weather-app
+```
 
-Install dependencies:
+### 3. Install Dependencies
 
+```bash
 npm install
+```
 
-Create a .env file and add your OpenWeather API key:
+### 4. Configure Environment Variables
 
+Create a `.env` file in the root directory and add your OpenWeather API key:
+
+```env
 VITE_OPENWEATHER_API_KEY=YOUR_API_KEY
+```
 
-Run the development server:
+Replace `YOUR_API_KEY` with your actual OpenWeather API key.
 
+### 5. Run the Development Server
+
+```bash
 npm run dev
+```
 
-Build the project:
+The application will start on the local development server provided by Vite.
 
+### 6. Build for Production
+
+```bash
 npm run build
-📁 Project Structure
+```
+
+---
+
+## 📁 Project Structure
+
+```text
 premium-weather-app/
 ├── public/
 ├── src/
@@ -85,7 +109,22 @@ premium-weather-app/
 │   └── main.jsx
 ├── package.json
 └── vite.config.js
+```
 
-🌐 API
+---
 
-This project uses the OpenWeather API to fetch real-time weather data and forecasts.
+## 🌐 API
+
+This project uses the **OpenWeather API** to fetch real-time weather information and forecast data.
+
+The API provides weather details such as:
+
+* Current temperature
+* Weather conditions
+* Humidity
+* Wind speed
+* Atmospheric pressure
+* Weather forecast
+* Weather icons
+
+
