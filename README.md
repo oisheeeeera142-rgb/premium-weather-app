@@ -1,6 +1,6 @@
 
 🌦️  Premium Weather App
- 🔗 Live Demo: https://lnkd.in/g_jVYZeD
+ 🔗 Live Demo: https://premium-weather-app-mocha.vercel.app/
 
 
 
